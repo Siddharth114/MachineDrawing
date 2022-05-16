@@ -62,11 +62,7 @@ class GeneticDrawing:
             sampling_mask = self.calc_sampling_mask(t)
         return sampling_mask
         
-    '''
-    we'd like to "guide" the brushtrokes along the image gradient direction, if such direction has large magnitude
-    in places of low magnitude, we allow for more deviation from the direction. 
-    this function precalculates angles and their magnitudes for later use inside DNA class
-    '''
+
     def _imgGradient(self, img):
         
         img = np.float32(img) / 255.0 
@@ -131,7 +127,7 @@ class DNA:
         self.imgAngles = img_gradient[1]
         
         
-        self.brushes = self.preload_brushes('brushes/watercolor/', self.maxBrushNumber)
+        self.brushes = self.preload_brushes('/Users/siddharth/Code/Python/MachineDrawing/brushes/', self.maxBrushNumber)
         self.sampling_mask = sampling_mask
         
         
@@ -140,8 +136,8 @@ class DNA:
         
     def preload_brushes(self, path, maxBrushNumber):
         imgs = []
-        for i in range(maxBrushNumber):
-            imgs.append(cv2.imread(path + str(i) +'.jpg'))
+        for i in range(1,maxBrushNumber+1):
+            imgs.append(cv2.imread(path + 'brush' + str(i) +'.jpeg'))
         return imgs
     
     def gen_new_positions(self):
@@ -165,12 +161,6 @@ class DNA:
             
             posY, posX = self.gen_new_positions()
             
-            '''
-            start with the angle from image gradient
-            based on magnitude of that angle direction, adjust the random angle offset.
-            So in places of high magnitude, we are more likely to follow the angle with our brushstroke.
-            In places of low magnitude, we can have a more random brushstroke direction.
-            '''
             random.seed(seed*i/4.0-5)
             localMag = self.imgMag[posY][posX]
             localAngle = self.imgAngles[posY][posX] + 90 
